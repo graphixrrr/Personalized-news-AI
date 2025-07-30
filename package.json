@@ -1,0 +1,33 @@
+{
+  "name": "personalized-news-ai",
+  "version": "1.0.0",
+  "description": "AI-powered personalized news aggregation platform",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:frontend\"",
+    "dev:backend": "cd backend && uvicorn main:app --reload --port 8000",
+    "dev:frontend": "cd frontend && pnpm run dev",
+    "build": "cd frontend && pnpm run build",
+    "install:all": "pnpm install && cd backend && pip install -r requirements.txt && cd ../frontend && pnpm install",
+    "setup": "pnpm run install:all && pnpm run db:setup",
+    "db:setup": "cd backend && python setup_database.py",
+    "db:migrate": "cd backend && alembic upgrade head",
+    "test": "pnpm run test:backend && pnpm run test:frontend",
+    "test:backend": "cd backend && python -m pytest",
+    "test:frontend": "cd frontend && pnpm run test"
+  },
+  "keywords": [
+    "news",
+    "ai",
+    "personalization",
+    "machine-learning",
+    "react",
+    "python",
+    "fastapi"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 
