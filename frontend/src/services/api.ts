@@ -20,6 +20,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  maxRedirects: 5, // Allow redirects
 });
 
 // Request interceptor to add auth token
