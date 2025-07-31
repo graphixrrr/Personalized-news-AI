@@ -72,17 +72,20 @@ class NewsService:
             return []
     
     def fetch_by_category(self, category: str, country: str = "us", page_size: int = 50) -> List[Dict]:
-        """Fetch articles by category"""
+        """Fetch articles by category (case-insensitive)"""
         categories = [
             "business", "entertainment", "general", "health", 
             "science", "sports", "technology"
         ]
         
-        if category not in categories:
+        # Convert category to lowercase for case-insensitive validation
+        category_lower = category.lower() if category else ""
+        
+        if category_lower not in categories:
             print(f"Invalid category: {category}")
             return []
             
-        return self.fetch_top_headlines(country=country, category=category, page_size=page_size)
+        return self.fetch_top_headlines(country=country, category=category_lower, page_size=page_size)
     
     def fetch_trending_topics(self) -> List[Dict]:
         """Fetch articles on trending topics"""
@@ -253,9 +256,11 @@ class NewsService:
         return len(saved_articles)
     
     def get_articles_by_category(self, db: Session, category: str, limit: int = 20) -> List[Article]:
-        """Get articles from database by category"""
+        """Get articles from database by category (case-insensitive)"""
+        # Convert category to lowercase for case-insensitive matching
+        category_lower = category.lower() if category else ""
         return db.query(Article).filter(
-            Article.category == category
+            Article.category.ilike(category_lower)
         ).order_by(Article.published_at.desc()).limit(limit).all()
     
     def get_latest_articles(self, db: Session, limit: int = 50) -> List[Article]:
@@ -265,11 +270,13 @@ class NewsService:
         ).limit(limit).all()
     
     def search_articles(self, db: Session, query: str, limit: int = 20) -> List[Article]:
-        """Search articles in database"""
+        """Search articles in database (case-insensitive)"""
+        # Convert query to lowercase for case-insensitive search
+        query_lower = query.lower() if query else ""
         return db.query(Article).filter(
-            Article.title.contains(query) | 
-            Article.description.contains(query) |
-            Article.content.contains(query)
+            Article.title.ilike(f'%{query_lower}%') | 
+            Article.description.ilike(f'%{query_lower}%') |
+            Article.content.ilike(f'%{query_lower}%')
         ).order_by(Article.published_at.desc()).limit(limit).all()
     
     def get_article_by_id(self, db: Session, article_id: int) -> Optional[Article]:
@@ -277,7 +284,9 @@ class NewsService:
         return db.query(Article).filter(Article.id == article_id).first()
     
     def get_articles_by_source(self, db: Session, source_name: str, limit: int = 20) -> List[Article]:
-        """Get articles by source"""
+        """Get articles by source (case-insensitive)"""
+        # Convert source name to lowercase for case-insensitive matching
+        source_lower = source_name.lower() if source_name else ""
         return db.query(Article).filter(
-            Article.source_name == source_name
+            Article.source_name.ilike(source_lower)
         ).order_by(Article.published_at.desc()).limit(limit).all() 
